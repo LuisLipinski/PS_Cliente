@@ -35,7 +35,9 @@ public class Cliente {
     @Transient
     private String rua;
 
+
     @Transient
+    @Column(nullable = true)
     private String complemento;
 
     @Transient
@@ -104,13 +106,17 @@ public class Cliente {
         return endereco;
     }
 
+    public void setEndereco(String rua, String numero) {
+        this.rua = rua;
+        this.numero = numero;
+        this.endereco = String.format("%s, %s", rua, numero);
+    }
+
     public void setEndereco(String rua, String complemento, String numero) {
         this.rua = rua;
         this.complemento = complemento;
         this.numero = numero;
-        this.estado = estado;
-        this.cidade = cidade;
-        this.endereco =String.format("%s, %s, %s", rua, complemento, numero, estado, cidade);
+        this.endereco = String.format("%s, %s, %s", rua, complemento, numero);
     }
 
     public String getRua() {

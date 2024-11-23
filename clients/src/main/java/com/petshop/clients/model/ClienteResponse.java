@@ -1,10 +1,14 @@
 package com.petshop.clients.model;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 import java.util.List;
 
 public class ClienteResponse {
     private Long id;
     private String nomeTutor;
+    @Enumerated(EnumType.STRING)
     private Sexo sexoTutor;
     private String cpf;
     private String telefone;
@@ -13,6 +17,23 @@ public class ClienteResponse {
     private Estado estado;
     private String cidade;
     private List<PetResponse> pets;
+
+    public ClienteResponse() {
+
+    }
+
+    public ClienteResponse(Long id, String nomeTutor, Sexo sexoTutor, String cpf, String telefone, String cep, String endereco, Estado estado, String cidade, List<PetResponse> pets) {
+        this.id = id;
+        this.nomeTutor = nomeTutor;
+        this.sexoTutor = sexoTutor;
+        this.cpf = cpf;
+        this.telefone = telefone;
+        this.cep = cep;
+        this.endereco = endereco;
+        this.estado = estado;
+        this.cidade = cidade;
+        this.pets = pets;
+    }
 
     public Long getId() {
         return id;

@@ -3,7 +3,7 @@ package com.petshop.clients.model;
 public class RegisterClienteRequest {
 
     private String nomeTutor;
-    private String sexoTutor;
+    private Sexo sexoTutor;
     private String cpf;
     private String telefone;
     private String cep;
@@ -21,11 +21,11 @@ public class RegisterClienteRequest {
         this.nomeTutor = nomeTutor;
     }
 
-    public String getSexoTutor() {
+    public Sexo getSexoTutor() {
         return sexoTutor;
     }
 
-    public void setSexoTutor(String sexoTutor) {
+    public void setSexoTutor(Sexo sexoTutor) {
         this.sexoTutor = sexoTutor;
     }
 

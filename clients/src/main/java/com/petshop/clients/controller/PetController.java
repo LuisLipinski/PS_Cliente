@@ -1,17 +1,14 @@
 package com.petshop.clients.controller;
 
-import com.petshop.clients.model.Cliente;
-import com.petshop.clients.model.PetResponse;
-import com.petshop.clients.model.Pets;
-import com.petshop.clients.model.Sexo;
+import com.petshop.clients.model.*;
 import com.petshop.clients.service.ClienteService;
 import com.petshop.clients.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pet")
@@ -46,5 +43,21 @@ public class PetController {
         response.setSexoPet(newPet.getSexoPet());
 
         return  ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/buscar/all")
+    public ResponseEntity<List<PetResponse>> getAllPets(SortFieldPets sortFieldPets, DirectionField directionField) {
+        List<Pets> pets = petService.getAllPets(sortFieldPets, directionField);
+            List<PetResponse> petResponses = pets.stream().map(pet -> {
+                PetResponse petResponse = new PetResponse();
+                petResponse.setId(pet.getId());
+                petResponse.setNomePet(pet.getNomePet());
+                petResponse.setTipoPet(pet.getTipoPet());
+                petResponse.setRacaPet(pet.getRacaPet());
+                petResponse.setSexoPet(pet.getSexoPet());
+                petResponse.setCorPet(pet.getCorPet());
+                return petResponse;
+            }).collect(Collectors.toList());
+        return ResponseEntity.ok(petResponses);
     }
 }

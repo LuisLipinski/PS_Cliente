@@ -3,6 +3,7 @@ package com.petshop.clients.controller;
 import com.petshop.clients.model.*;
 import com.petshop.clients.service.ClienteService;
 import com.petshop.clients.service.PetService;
+import com.petshop.clients.validation.NomeValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,12 @@ public class PetController {
                                                 @RequestParam String tipoPet,
                                                 @RequestParam String racaPet,
                                                 @RequestParam String corPet,
-                                                @RequestParam Sexo sexoPet) {
+                                                @RequestParam SexoPet sexoPet) {
+
+        NomeValidation nomeValidation = new NomeValidation();
+        if(!nomeValidation.isvalidNomePet(nomePet)) {
+            return ResponseEntity.badRequest().body(null);
+        }
         Pets pet = new Pets();
         pet.setNomePet(nomePet);
         pet.setTipoPet(tipoPet);
@@ -59,5 +65,18 @@ public class PetController {
                 return petResponse;
             }).collect(Collectors.toList());
         return ResponseEntity.ok(petResponses);
+    }
+
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<PetResponse> getPetById(Long id) {
+        Pets pets = petService.getPetById(id);
+        PetResponse petResponse = new PetResponse();
+        petResponse.setId(pets.getId());
+        petResponse.setNomePet(pets.getNomePet());
+        petResponse.setTipoPet(pets.getTipoPet());
+        petResponse.setRacaPet(pets.getRacaPet());
+        petResponse.setSexoPet(pets.getSexoPet());
+        petResponse.setCorPet(pets.getCorPet());
+        return ResponseEntity.ok(petResponse);
     }
 }

@@ -2,10 +2,10 @@ package com.petshop.clients.controller;
 
 import com.petshop.clients.model.*;
 import com.petshop.clients.service.ClienteService;
+import com.petshop.clients.validation.NomeValidation;
 import jakarta.xml.bind.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +29,10 @@ public class ClienteController {
                                                     @RequestParam String numero,
                                                     @RequestParam Estado estado,
                                                     @RequestParam String cidade) throws ValidationException {
+        NomeValidation nomeValidation = new NomeValidation();
+        if(!nomeValidation.isvalidNomeTutor(nomeTutor)){
+            return ResponseEntity.badRequest().body(null);
+        }
         Cliente cliente = new Cliente();
         cliente.setNomeTutor(nomeTutor);
         cliente.setSexoTutor(sexoTutor);
@@ -88,6 +92,71 @@ public class ClienteController {
             clienteResponse.setPets(petResponses);
             return clienteResponse;
         }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<ClienteResponse> getById(@PathVariable Long id) {
+        Cliente cliente = clienteService.getClientById(id);
+        ClienteResponse clienteResponse = new ClienteResponse();
+        clienteResponse.setId(cliente.getId());
+        clienteResponse.setNomeTutor(cliente.getNomeTutor());
+        clienteResponse.setSexoTutor(cliente.getSexoTutor());
+        clienteResponse.setCpf(cliente.getCpf());
+        clienteResponse.setTelefone(cliente.getTelefone());
+        clienteResponse.setCep(cliente.getCep());
+        clienteResponse.setEndereco(cliente.getEndereco());
+        clienteResponse.setEstado(cliente.getEstado());
+        clienteResponse.setCidade(cliente.getCidade());
+
+        List<PetResponse> petResponses = cliente.getPets().stream().map(pets -> {
+            PetResponse petResponse = new PetResponse();
+            petResponse.setId(pets.getId());
+            petResponse.setNomePet(pets.getNomePet());
+            petResponse.setTipoPet(pets.getTipoPet());
+            petResponse.setRacaPet(pets.getRacaPet());
+            petResponse.setSexoPet(pets.getSexoPet());
+            petResponse.setCorPet(pets.getCorPet());
+            return petResponse;
+        }).collect(Collectors.toList());
+        clienteResponse.setPets(petResponses);
+
+
+        return ResponseEntity.ok(clienteResponse);
+    }
+
+    @GetMapping("/buscar/nomeTutor")
+    public ResponseEntity <List<ClienteResponse>> getClientesByNomeTutor(@RequestParam String nomeTutor,
+                                                     @RequestParam(required = false, defaultValue = "NOME_TUTOR") SortField sortField,
+                                                     @RequestParam(required = false, defaultValue = "ASC") DirectionField direction) {
+        List<Cliente> clientes = clienteService.getClientByNomeTutor(nomeTutor, sortField, direction);
+        List<ClienteResponse> response = clientes.stream().map(cliente -> {
+            ClienteResponse clienteResponse = new ClienteResponse();
+            clienteResponse.setId(cliente.getId());
+            clienteResponse.setNomeTutor(cliente.getNomeTutor());
+            clienteResponse.setSexoTutor(cliente.getSexoTutor());
+            clienteResponse.setCpf(cliente.getCpf());
+            clienteResponse.setTelefone(cliente.getTelefone());
+            clienteResponse.setCep(cliente.getCep());
+            clienteResponse.setEndereco(cliente.getEndereco());
+            clienteResponse.setEstado(cliente.getEstado());
+            clienteResponse.setCidade(cliente.getCidade());
+
+            List<PetResponse> petResponses = cliente.getPets().stream().map(pets -> {
+                PetResponse petResponse = new PetResponse();
+                petResponse.setId(pets.getId());
+                petResponse.setNomePet(pets.getNomePet());
+                petResponse.setTipoPet(pets.getTipoPet());
+                petResponse.setRacaPet(pets.getRacaPet());
+                petResponse.setSexoPet(pets.getSexoPet());
+                petResponse.setCorPet(pets.getCorPet());
+                return petResponse;
+            }).collect(Collectors.toList());
+            clienteResponse.setPets(petResponses);
+            return clienteResponse;
+        }).collect(Collectors.toList());
+
 
         return ResponseEntity.ok(response);
     }

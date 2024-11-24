@@ -6,7 +6,7 @@ public class PetResponse {
     private String tipoPet;
     private String racaPet;
     private String corPet;
-    private Sexo sexoPet;
+    private SexoPet sexoPet;
 
     public Long getId() {
         return id;
@@ -48,11 +48,11 @@ public class PetResponse {
         this.corPet = corPet;
     }
 
-    public Sexo getSexoPet() {
+    public SexoPet getSexoPet() {
         return sexoPet;
     }
 
-    public void setSexoPet(Sexo sexoPet) {
+    public void setSexoPet(SexoPet sexoPet) {
         this.sexoPet = sexoPet;
     }
 }

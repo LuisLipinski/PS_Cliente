@@ -31,4 +31,8 @@ public class PetService {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortFieldPets.getFieldPets());
         return petRepository.findAll(sort);
     }
+
+    public Pets getPetById(Long id) {
+        return petRepository.findById(id).orElse(null);
+    }
 }

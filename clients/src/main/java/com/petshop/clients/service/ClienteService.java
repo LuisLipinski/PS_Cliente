@@ -30,4 +30,15 @@ ClienteService {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortField.getField());
         return clienteRepository.findAll(sort);
     }
+
+    @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
+    public Cliente getClientById(Long id) {
+        return clienteRepository.findById(id).orElse(null);
+    }
+
+    @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
+    public List<Cliente> getClientByNomeTutor(String nomeTutor, SortField sortField, DirectionField directionField) {
+        Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortField.getField());
+        return clienteRepository.findByNomeTutor(nomeTutor, sort);
+    }
 }

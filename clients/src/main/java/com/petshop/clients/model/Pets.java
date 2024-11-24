@@ -22,7 +22,7 @@ public class Pets {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Sexo sexoPet;
+    private SexoPet sexoPet;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
@@ -68,11 +68,11 @@ public class Pets {
         this.corPet = corPet;
     }
 
-    public Sexo getSexoPet() {
+    public SexoPet getSexoPet() {
         return sexoPet;
     }
 
-    public void setSexoPet(Sexo sexoPet) {
+    public void setSexoPet(SexoPet sexoPet) {
         this.sexoPet = sexoPet;
     }
 

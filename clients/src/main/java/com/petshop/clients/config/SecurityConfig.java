@@ -23,7 +23,11 @@ public class SecurityConfig {
        http.csrf(csrf -> csrf.disable())
                .authorizeHttpRequests(auth -> auth
                        .requestMatchers("/clientes/register").hasAnyRole("MASTER", "ADMIN", "LOJA")
+                       .requestMatchers("/clientes/buscar/all").hasAnyRole("MASTER", "ADMIN", "LOJA")
+                       .requestMatchers("/clientes/buscar/{id}").hasAnyRole("MASTER", "ADMIN", "LOJA")
+                       .requestMatchers("/clientes/buscar/nomeTutor").hasAnyRole("MASTER", "ADMIN", "LOJA")
                        .requestMatchers("/pet/register").hasAnyRole("MASTER", "ADMIN", "LOJA")
+                       .requestMatchers("/pet/buscar/all").hasAnyRole("MASTER", "ADMIN", "LOJA")
                        .requestMatchers(
                                "/swagger-ui.html",
                                "/swagger-ui/**",

@@ -240,4 +240,14 @@ public class ClienteController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteCliente(@PathVariable long id) {
+        boolean deleted = clienteService.deleteCliente(id);
+        if(deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

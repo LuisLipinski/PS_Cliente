@@ -1,10 +1,8 @@
 package com.petshop.clients.service;
 
-import com.petshop.clients.model.Cliente;
-import com.petshop.clients.model.ClienteResponse;
-import com.petshop.clients.model.DirectionField;
-import com.petshop.clients.model.SortField;
+import com.petshop.clients.model.*;
 import com.petshop.clients.repository.ClienteRepository;
+import com.petshop.clients.repository.PetRepository;
 import jakarta.xml.bind.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -20,6 +18,8 @@ ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private PetRepository petRepository;
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public Cliente registerCliente(Cliente cliente) {
@@ -71,5 +71,23 @@ ClienteService {
         existingCliente.setCidade(clienteAtualizado.getCidade());
 
         return clienteRepository.save(existingCliente);
+    }
+
+    @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
+    public boolean deleteCliente(Long id) {
+        Cliente cliente = clienteRepository.findByIdAndStatus(id);
+        if (cliente == null) {
+            return false;
+        }
+
+        cliente.setStatus(0);
+        clienteRepository.save(cliente);
+
+        for (Pets pet : cliente.getPets()) {
+            pet.setStatus(0);
+        }
+
+        petRepository.saveAll(cliente.getPets());
+        return true;
     }
 }

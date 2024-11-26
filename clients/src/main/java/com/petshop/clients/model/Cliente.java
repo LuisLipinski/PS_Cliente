@@ -50,6 +50,9 @@ public class Cliente {
     @Column(nullable = false)
     private String cidade;
 
+    @Column(nullable = false)
+    private int status;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pets> pets;
 
@@ -157,6 +160,14 @@ public class Cliente {
 
     public void setCidade(String cidade) {
         this.cidade = cidade;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public List<Pets> getPets() {

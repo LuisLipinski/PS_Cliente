@@ -110,7 +110,7 @@ public class ClienteController {
         clienteResponse.setEstado(cliente.getEstado());
         clienteResponse.setCidade(cliente.getCidade());
 
-        List<PetResponse> petResponses = cliente.getPets().stream().map(pets -> {
+        List<PetResponse> petResponses = cliente.getPets().stream().filter(pet -> pet.getStatus() == 1).map(pets -> {
             PetResponse petResponse = new PetResponse();
             petResponse.setId(pets.getId());
             petResponse.setNomePet(pets.getNomePet());
@@ -143,7 +143,7 @@ public class ClienteController {
             clienteResponse.setEstado(cliente.getEstado());
             clienteResponse.setCidade(cliente.getCidade());
 
-            List<PetResponse> petResponses = cliente.getPets().stream().map(pets -> {
+            List<PetResponse> petResponses = cliente.getPets().stream().filter(pet -> pet.getStatus() == 1).map(pets -> {
                 PetResponse petResponse = new PetResponse();
                 petResponse.setId(pets.getId());
                 petResponse.setNomePet(pets.getNomePet());
@@ -157,6 +157,85 @@ public class ClienteController {
             return clienteResponse;
         }).collect(Collectors.toList());
 
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/buscar/cpf")
+    public ResponseEntity<ClienteResponse> getByCpf(@RequestParam String cpf) {
+        Cliente cliente = clienteService.getClientByCpf(cpf);
+        ClienteResponse clienteResponse = new ClienteResponse();
+        clienteResponse.setId(cliente.getId());
+        clienteResponse.setNomeTutor(cliente.getNomeTutor());
+        clienteResponse.setSexoTutor(cliente.getSexoTutor());
+        clienteResponse.setCpf(cliente.getCpf());
+        clienteResponse.setTelefone(cliente.getTelefone());
+        clienteResponse.setCep(cliente.getCep());
+        clienteResponse.setEndereco(cliente.getEndereco());
+        clienteResponse.setEstado(cliente.getEstado());
+        clienteResponse.setCidade(cliente.getCidade());
+
+        List<PetResponse> petResponses = cliente.getPets().stream().filter(pet -> pet.getStatus() == 1).map(pets -> {
+            PetResponse petResponse = new PetResponse();
+            petResponse.setId(pets.getId());
+            petResponse.setNomePet(pets.getNomePet());
+            petResponse.setTipoPet(pets.getTipoPet());
+            petResponse.setRacaPet(pets.getRacaPet());
+            petResponse.setSexoPet(pets.getSexoPet());
+            petResponse.setCorPet(pets.getCorPet());
+            return petResponse;
+        }).collect(Collectors.toList());
+        clienteResponse.setPets(petResponses);
+
+
+        return ResponseEntity.ok(clienteResponse);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ClienteResponse> updateClient(@PathVariable Long id,
+                                                    @RequestParam String nomeTutor,
+                                                    @RequestParam Sexo sexoTutor,
+                                                    @RequestParam String cpf,
+                                                    @RequestParam String telefone,
+                                                    @RequestParam String cep,
+                                                    @RequestParam String rua,
+                                                    @RequestParam(required = false, defaultValue = "") String complemento,
+                                                    @RequestParam String numero,
+                                                    @RequestParam Estado estado,
+                                                    @RequestParam String cidade) throws ValidationException {
+        NomeValidation nomeValidation = new NomeValidation();
+        if(!nomeValidation.isvalidNomeTutor(nomeTutor)){
+            return ResponseEntity.badRequest().body(null);
+        }
+        Cliente clienteAtualizado = new Cliente();
+        clienteAtualizado.setNomeTutor(nomeTutor);
+        clienteAtualizado.setSexoTutor(sexoTutor);
+        clienteAtualizado.setCpf(cpf);
+        clienteAtualizado.setTelefone(telefone);
+        clienteAtualizado.setCep(cep);
+        if(complemento != null && !complemento.trim().isEmpty()) {
+            clienteAtualizado.setEndereco(rua, complemento, numero);
+        } else {
+            clienteAtualizado.setEndereco(rua, numero);
+        }
+        clienteAtualizado.setEstado(estado);
+        clienteAtualizado.setCidade(cidade);
+
+        Cliente updateCliente = clienteService.updateCliente(id, clienteAtualizado);
+        if (updateCliente == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        ClienteResponse response = new ClienteResponse();
+        response.setId(updateCliente.getId());
+        response.setNomeTutor(updateCliente.getNomeTutor());
+        response.setSexoTutor(updateCliente.getSexoTutor());
+        response.setCpf(updateCliente.getCpf());
+        response.setTelefone(updateCliente.getTelefone());
+        response.setCep(updateCliente.getCep());
+        response.setEndereco(updateCliente.getEndereco());
+        response.setEstado(updateCliente.getEstado());
+        response.setCidade(updateCliente.getCidade());
 
         return ResponseEntity.ok(response);
     }

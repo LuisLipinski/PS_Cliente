@@ -24,6 +24,9 @@ public class Pets {
     @Column(nullable = false)
     private SexoPet sexoPet;
 
+    @Column(nullable = false)
+    private int status;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
@@ -74,6 +77,14 @@ public class Pets {
 
     public void setSexoPet(SexoPet sexoPet) {
         this.sexoPet = sexoPet;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Cliente getCliente() {

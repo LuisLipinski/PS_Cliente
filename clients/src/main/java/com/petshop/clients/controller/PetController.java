@@ -4,6 +4,7 @@ import com.petshop.clients.model.*;
 import com.petshop.clients.service.ClienteService;
 import com.petshop.clients.service.PetService;
 import com.petshop.clients.validation.NomeValidation;
+import jakarta.xml.bind.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,4 +80,85 @@ public class PetController {
         petResponse.setCorPet(pets.getCorPet());
         return ResponseEntity.ok(petResponse);
     }
+
+    @GetMapping("/buscar/nomePet")
+    public ResponseEntity<List<PetResponse>> getnomePets(String nomePets, SortFieldPets sortFieldPets, DirectionField directionField) {
+        List<Pets> pets = petService.getpetByName(nomePets, sortFieldPets, directionField);
+        List<PetResponse> petResponses = pets.stream().map(pet -> {
+            PetResponse petResponse = new PetResponse();
+            petResponse.setId(pet.getId());
+            petResponse.setNomePet(pet.getNomePet());
+            petResponse.setTipoPet(pet.getTipoPet());
+            petResponse.setRacaPet(pet.getRacaPet());
+            petResponse.setSexoPet(pet.getSexoPet());
+            petResponse.setCorPet(pet.getCorPet());
+            return petResponse;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(petResponses);
+    }
+
+    @GetMapping("/buscar/tipoPet")
+    public ResponseEntity<List<PetResponse>> getTipoPet(String tipoPet, SortFieldPets sortFieldPets, DirectionField directionField) {
+        List<Pets> pets = petService.getpetByTipo(tipoPet, sortFieldPets, directionField);
+        List<PetResponse> petResponses = pets.stream().map(pet -> {
+            PetResponse petResponse = new PetResponse();
+            petResponse.setId(pet.getId());
+            petResponse.setNomePet(pet.getNomePet());
+            petResponse.setTipoPet(pet.getTipoPet());
+            petResponse.setRacaPet(pet.getRacaPet());
+            petResponse.setSexoPet(pet.getSexoPet());
+            petResponse.setCorPet(pet.getCorPet());
+            return petResponse;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(petResponses);
+    }
+
+    @GetMapping("/buscar/raca")
+    public ResponseEntity<List<PetResponse>> getraca(String raca, SortFieldPets sortFieldPets, DirectionField directionField) {
+        List<Pets> pets = petService.getpetByraca(raca, sortFieldPets, directionField);
+        List<PetResponse> petResponses = pets.stream().map(pet -> {
+            PetResponse petResponse = new PetResponse();
+            petResponse.setId(pet.getId());
+            petResponse.setNomePet(pet.getNomePet());
+            petResponse.setTipoPet(pet.getTipoPet());
+            petResponse.setRacaPet(pet.getRacaPet());
+            petResponse.setSexoPet(pet.getSexoPet());
+            petResponse.setCorPet(pet.getCorPet());
+            return petResponse;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(petResponses);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<PetResponse> updatePet(@PathVariable Long id,
+                                                @RequestParam String nomePet,
+                                                @RequestParam String tipoPet,
+                                                @RequestParam String racaPet,
+                                                @RequestParam String corPet,
+                                                @RequestParam SexoPet sexoPet) throws ValidationException {
+
+        NomeValidation nomeValidation = new NomeValidation();
+        if(!nomeValidation.isvalidNomePet(nomePet)) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Pets petAtualizado = new Pets();
+        petAtualizado.setNomePet(nomePet);
+        petAtualizado.setTipoPet(tipoPet);
+        petAtualizado.setRacaPet(racaPet);
+        petAtualizado.setCorPet(corPet);
+        petAtualizado.setSexoPet(sexoPet);
+
+        Pets newPet = petService.updatePet(id, petAtualizado);
+
+        PetResponse response = new PetResponse();
+        response.setId(newPet.getId());
+        response.setNomePet(newPet.getNomePet());
+        response.setTipoPet(newPet.getTipoPet());
+        response.setRacaPet(newPet.getRacaPet());
+        response.setCorPet(newPet.getCorPet());
+        response.setSexoPet(newPet.getSexoPet());
+
+        return  ResponseEntity.ok(response);
+    }
+
 }

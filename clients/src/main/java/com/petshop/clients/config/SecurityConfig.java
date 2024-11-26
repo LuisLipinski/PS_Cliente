@@ -28,6 +28,8 @@ public class SecurityConfig {
                        .requestMatchers("/clientes/buscar/nomeTutor").hasAnyRole("MASTER", "ADMIN", "LOJA")
                        .requestMatchers("/pet/register").hasAnyRole("MASTER", "ADMIN", "LOJA")
                        .requestMatchers("/pet/buscar/all").hasAnyRole("MASTER", "ADMIN", "LOJA")
+                       .requestMatchers("/pet/buscar/{id}").hasAnyRole("MASTER", "ADMIN", "LOJA")
+                       .requestMatchers("/pet/buscar/nomePet").hasAnyRole("MASTER", "ADMIN", "LOJA")
                        .requestMatchers(
                                "/swagger-ui.html",
                                "/swagger-ui/**",

@@ -1,4 +1,4 @@
-package com.petshop.clients.Exception;
+package com.petshop.clients.exception;
 
 public class ErrorResponse {
     private String message;

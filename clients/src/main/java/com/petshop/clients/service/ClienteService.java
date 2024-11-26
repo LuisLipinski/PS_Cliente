@@ -1,5 +1,6 @@
 package com.petshop.clients.service;
 
+import com.petshop.clients.exception.ClienteNotFoundException;
 import com.petshop.clients.model.*;
 import com.petshop.clients.repository.ClienteRepository;
 import com.petshop.clients.repository.PetRepository;
@@ -31,6 +32,9 @@ ClienteService {
     public List<Cliente> getAllClientes(SortField sortField, DirectionField directionField) {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortField.getField());
         List<Cliente> clientes = clienteRepository.findByStatus(1, sort);
+        if (clientes == null) {
+            throw new ClienteNotFoundException("Nenhum Cliente encontrado.");
+        }
         for(Cliente cliente : clientes) {
             cliente.setPets(cliente.getPets().stream().filter(pets -> pets.getStatus() == 1).collect(Collectors.toList()));
         }
@@ -39,25 +43,37 @@ ClienteService {
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public Cliente getClientById(Long id) {
-        return clienteRepository.findByIdAndStatus(id);
+        Cliente cliente = clienteRepository.findByIdAndStatus(id);
+        if (cliente == null) {
+            throw new ClienteNotFoundException("Cliente não encontrado com o ID: " + id);
+        }
+        return cliente;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public List<Cliente> getClientByNomeTutor(String nomeTutor, SortField sortField, DirectionField directionField) {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortField.getField());
-        return clienteRepository.findByNomeTutorAndStatus(nomeTutor, sort);
+        List<Cliente> clientes = clienteRepository.findByNomeTutorAndStatus(nomeTutor, sort);
+        if (clientes == null) {
+            throw new ClienteNotFoundException("Não foi encontrado nenhum cliente com o nome " + nomeTutor);
+        }
+        return clientes;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public Cliente getClientByCpf(String cpf) {
-        return clienteRepository.findByCpfAndStatus(cpf);
+        Cliente cliente = clienteRepository.findByCpfAndStatus(cpf);
+        if (cliente == null) {
+            throw new ClienteNotFoundException("Cliente não encontrado com o CPF: " + cpf);
+        }
+        return cliente;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public Cliente updateCliente(Long id, Cliente clienteAtualizado) throws ValidationException {
         Cliente existingCliente = clienteRepository.findByIdAndStatus(id);
         if(existingCliente == null) {
-            return null;
+            throw new ClienteNotFoundException("Cliente não encontrado com o ID: " + id);
         }
         existingCliente.setNomeTutor(clienteAtualizado.getNomeTutor());
         existingCliente.setCpf(clienteAtualizado.getCpf());

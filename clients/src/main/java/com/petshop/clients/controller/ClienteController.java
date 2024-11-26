@@ -1,5 +1,7 @@
 package com.petshop.clients.controller;
 
+import com.petshop.clients.exception.ClienteNameInvalidException;
+import com.petshop.clients.exception.ClienteNotFoundException;
 import com.petshop.clients.model.*;
 import com.petshop.clients.service.ClienteService;
 import com.petshop.clients.validation.NomeValidation;
@@ -31,7 +33,7 @@ public class ClienteController {
                                                     @RequestParam String cidade) throws ValidationException {
         NomeValidation nomeValidation = new NomeValidation();
         if(!nomeValidation.isvalidNomeTutor(nomeTutor)){
-            return ResponseEntity.badRequest().body(null);
+            throw new ClienteNameInvalidException("Nome do tutor invalido.");
         }
         Cliente cliente = new Cliente();
         cliente.setNomeTutor(nomeTutor);
@@ -205,7 +207,7 @@ public class ClienteController {
                                                     @RequestParam String cidade) throws ValidationException {
         NomeValidation nomeValidation = new NomeValidation();
         if(!nomeValidation.isvalidNomeTutor(nomeTutor)){
-            return ResponseEntity.badRequest().body(null);
+            throw new ClienteNameInvalidException("Nome do tutor invalido.");
         }
         Cliente clienteAtualizado = new Cliente();
         clienteAtualizado.setNomeTutor(nomeTutor);
@@ -223,7 +225,7 @@ public class ClienteController {
 
         Cliente updateCliente = clienteService.updateCliente(id, clienteAtualizado);
         if (updateCliente == null){
-            return ResponseEntity.badRequest().build();
+            throw new ClienteNotFoundException("Cliente não encontrado com o ID: " + id);
         }
 
         ClienteResponse response = new ClienteResponse();
@@ -246,7 +248,7 @@ public class ClienteController {
         if(deleted) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new ClienteNotFoundException("Cliente não encontrado com o ID: " + id);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.petshop.clients.controller;
 
+import com.petshop.clients.exception.PetNotFoundException;
 import com.petshop.clients.model.*;
 import com.petshop.clients.service.ClienteService;
 import com.petshop.clients.service.PetService;
@@ -149,6 +150,9 @@ public class PetController {
         petAtualizado.setSexoPet(sexoPet);
 
         Pets newPet = petService.updatePet(id, petAtualizado);
+        if (newPet == null) {
+            throw new PetNotFoundException("Pet não encontrado com o id " + id);
+        }
 
         PetResponse response = new PetResponse();
         response.setId(newPet.getId());
@@ -159,6 +163,16 @@ public class PetController {
         response.setSexoPet(newPet.getSexoPet());
 
         return  ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deletePet(@PathVariable long id) {
+        boolean deleted = petService.deletePet(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            throw new PetNotFoundException("Pet não encontrado com o id " + id);
+        }
     }
 
 }

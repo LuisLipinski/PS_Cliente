@@ -1,5 +1,7 @@
 package com.petshop.clients.service;
 
+import com.petshop.clients.exception.ClienteNotFoundException;
+import com.petshop.clients.exception.PetNotFoundException;
 import com.petshop.clients.model.*;
 import com.petshop.clients.repository.ClienteRepository;
 import com.petshop.clients.repository.PetRepository;
@@ -31,29 +33,50 @@ public class PetService {
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public List<Pets> getAllPets(SortFieldPets sortFieldPets, DirectionField directionField) {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortFieldPets.getFieldPets());
-        return petRepository.findByStatus(1, sort);
+        List<Pets> pets = petRepository.findByStatus(1, sort);
+        if (pets == null) {
+            throw new PetNotFoundException("Nenhum Pet encontrado.");
+        }
+        return pets;
     }
 
     public Pets getPetById(Long id) {
-        return petRepository.findByIdAndStatus(id);
+
+        Pets pet = petRepository.findByIdAndStatus(id);
+        if (pet == null) {
+            throw new PetNotFoundException("Pet não encontrado com o id " + id);
+        }
+        return pet;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public List<Pets> getpetByName(String nomePet, SortFieldPets sortFieldPets, DirectionField directionField) {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortFieldPets.getFieldPets());
-        return petRepository.findByNomePetAndStatus(nomePet, 1, sort);
+        List<Pets> pets = petRepository.findByNomePetAndStatus(nomePet, 1, sort);
+        if (pets == null) {
+            throw new PetNotFoundException("Nenhum pet encontrado com o nome " + nomePet);
+        }
+        return pets;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public List<Pets> getpetByTipo(String tipo, SortFieldPets sortFieldPets, DirectionField directionField) {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortFieldPets.getFieldPets());
-        return petRepository.findByTipoPetAndStatus(tipo, 1, sort);
+        List<Pets> pets = petRepository.findByTipoPetAndStatus(tipo, 1, sort);
+        if (pets == null) {
+            throw new PetNotFoundException("Nenhum pet encontrado com o nome " + tipo);
+        }
+        return pets;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
     public List<Pets> getpetByraca(String raca, SortFieldPets sortFieldPets, DirectionField directionField) {
         Sort sort = Sort.by(Sort.Direction.fromString(directionField.getDirection()),sortFieldPets.getFieldPets());
-        return petRepository.findByRacaPetAndStatus(raca, 1, sort);
+        List<Pets> pets = petRepository.findByRacaPetAndStatus(raca, 1, sort);
+        if (pets == null) {
+            throw new PetNotFoundException("Nenhum pet encontrado com o nome " + raca);
+        }
+        return pets;
     }
 
     @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
@@ -70,5 +93,15 @@ public class PetService {
 
 
         return petRepository.save(existingPet);
+    }
+    @PreAuthorize("hasRole('MASTER') or hasRole('ADMIN') or hasRole('LOJA')")
+    public boolean deletePet(long id) {
+        Pets pets = petRepository.findByIdAndStatus(id);
+        if (pets == null) {
+            return false;
+        }
+        pets.setStatus(0);
+        petRepository.save(pets);
+        return true;
     }
 }
